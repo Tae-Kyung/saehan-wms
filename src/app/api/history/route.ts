@@ -25,7 +25,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .select('*, equipment:saehan_equipment(code, name, type, factory:saehan_factories(name))')
       .eq('date', date)
       .eq('status', '가동')
-      .order('equipment_id');
+      .order('equipment_id')
+      .limit(200);
 
     // 인력 배치 이력
     const assignmentQuery = supabase
@@ -35,7 +36,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .eq('status', '확정')
       .order('shift')
       .order('department')
-      .order('role');
+      .order('role')
+      .limit(200);
 
     const [eqResult, asResult] = await Promise.all([equipmentQuery, assignmentQuery]);
 
@@ -88,19 +90,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const [y, m] = month.split('-').map(Number);
     const endDate = `${y}-${String(m + 1).padStart(2, '0')}-01`;
 
+    const endD = m === 12 ? `${y + 1}-01-01` : endDate;
+
     const { data: dailyEquip, error: eqErr } = await supabase
       .from('saehan_production_plan_details')
       .select('date, shift, equipment_id')
       .gte('date', startDate)
-      .lt('date', m === 12 ? `${y + 1}-01-01` : endDate)
-      .eq('status', '가동');
+      .lt('date', endD)
+      .eq('status', '가동')
+      .limit(5000);
 
     const { data: dailyAssign, error: asErr } = await supabase
       .from('saehan_worker_assignments')
       .select('date, shift, department')
       .gte('date', startDate)
-      .lt('date', m === 12 ? `${y + 1}-01-01` : endDate)
-      .eq('status', '확정');
+      .lt('date', endD)
+      .eq('status', '확정')
+      .limit(5000);
 
     if (eqErr) return NextResponse.json({ error: eqErr.message }, { status: 500 });
     if (asErr) return NextResponse.json({ error: asErr.message }, { status: 500 });
