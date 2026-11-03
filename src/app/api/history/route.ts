@@ -32,7 +32,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .from('saehan_worker_assignments')
       .select('*, employee:saehan_employees(name, department, shift_group, role, affiliation)')
       .eq('date', date)
-      .eq('status', '이력')
+      .eq('status', '확정')
       .order('shift')
       .order('department')
       .order('role');
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .select('date, shift, department')
       .gte('date', startDate)
       .lt('date', m === 12 ? `${y + 1}-01-01` : endDate)
-      .eq('status', '이력');
+      .eq('status', '확정');
 
     if (eqErr) return NextResponse.json({ error: eqErr.message }, { status: 500 });
     if (asErr) return NextResponse.json({ error: asErr.message }, { status: 500 });
