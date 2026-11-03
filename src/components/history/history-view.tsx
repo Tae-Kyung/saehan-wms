@@ -30,6 +30,7 @@ type AssignmentDetail = {
   shift: string;
   department: string;
   role: string;
+  sub_department: string | null;
   notes: string;
   employee: {
     name: string;
@@ -262,6 +263,7 @@ export function HistoryView(): React.ReactElement {
                       <table className="w-full text-xs">
                         <thead className="bg-gray-50">
                           <tr>
+                            <th className="px-2 py-1 text-left">설비</th>
                             <th className="px-2 py-1 text-left">이름</th>
                             <th className="px-2 py-1 text-left">부서</th>
                             <th className="px-2 py-1 text-left">역할</th>
@@ -271,8 +273,11 @@ export function HistoryView(): React.ReactElement {
                         <tbody>
                           {shiftData.assignments.map((a, i) => (
                             <tr key={i} className="border-t">
+                              <td className="px-2 py-1 font-mono font-bold text-blue-600">
+                                {a.sub_department ?? '-'}
+                              </td>
                               <td className="px-2 py-1 font-medium">
-                                {a.employee?.name ?? a.notes}
+                                {a.employee?.name ?? a.notes?.split(' / ')[0]}
                               </td>
                               <td className="px-2 py-1">{a.department}</td>
                               <td className="px-2 py-1">{a.role}</td>
