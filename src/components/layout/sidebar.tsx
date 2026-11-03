@@ -35,6 +35,7 @@ const navigation = [
     title: '리포트',
     items: [
       { title: '근무실적 리포트', href: '/reports/labor' },
+      { title: '2025년 이력 조회', href: '/history' },
     ],
   },
   {

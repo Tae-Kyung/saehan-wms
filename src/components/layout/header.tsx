@@ -1,13 +1,23 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { MobileSidebar } from './sidebar';
+import { NotificationPanel } from '@/components/notifications/notification-panel';
 
 export function Header(): React.ReactElement {
   const router = useRouter();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }: { data: { user: { id: string } | null } }) => {
+      setUserId(data.user?.id ?? null);
+    });
+  }, []);
 
   async function handleLogout(): Promise<void> {
     const supabase = createClient();
@@ -42,7 +52,8 @@ export function Header(): React.ReactElement {
         </Sheet>
       </div>
 
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-2">
+        {userId && <NotificationPanel userId={userId} />}
         <Button variant="ghost" size="sm" onClick={handleLogout}>
           로그아웃
         </Button>

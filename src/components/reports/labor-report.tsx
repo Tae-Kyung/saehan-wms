@@ -164,6 +164,20 @@ export function LaborReport(): React.ReactElement {
         <span className="text-sm font-medium">
           {formatPeriodLabel(period, dateStr)}
         </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const url = `/api/export?type=labor&period=${period}&date=${dateStr}`;
+            window.location.href = url;
+          }}
+          className="ml-auto"
+        >
+          <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          CSV 다운로드
+        </Button>
         {loading && <span className="text-muted-foreground text-sm">로딩...</span>}
       </div>
 
