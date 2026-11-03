@@ -10,6 +10,7 @@ type EquipmentItem = {
   name: string | null;
   type: string | null;
   stage: string | null;
+  staffing_group: string | null;
   air_usage_33k: number;
   air_usage_25k: number;
   is_active: boolean;
@@ -19,6 +20,12 @@ type EquipmentItem = {
 
 type Props = {
   equipment: EquipmentItem[];
+};
+
+const FREQ_COLORS: Record<string, { bg: string; label: string }> = {
+  HIGH: { bg: 'bg-green-100 border-green-300', label: '상시' },
+  MID:  { bg: 'bg-yellow-50 border-yellow-300', label: '간헐' },
+  LOW:  { bg: 'bg-gray-50 border-gray-200', label: '저빈도' },
 };
 
 export function EquipmentStatusBoard({ equipment }: Props): React.ReactElement {
@@ -51,24 +58,36 @@ export function EquipmentStatusBoard({ equipment }: Props): React.ReactElement {
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {items.map((eq) => (
-                <Card key={eq.id} className="p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-lg font-bold">{eq.code}</span>
-                    <Badge variant="default">가동</Badge>
-                  </div>
-                  <div className="text-muted-foreground mt-1 text-xs">
-                    {eq.type ?? eq.name ?? '-'}
-                  </div>
-                  {(eq.air_usage_33k > 0 || eq.air_usage_25k > 0) && (
-                    <div className="text-muted-foreground mt-1 font-mono text-xs">
-                      {eq.air_usage_33k > 0 && `33k: ${eq.air_usage_33k}`}
-                      {eq.air_usage_33k > 0 && eq.air_usage_25k > 0 && ' | '}
-                      {eq.air_usage_25k > 0 && `25k: ${eq.air_usage_25k}`}
+              {items.map((eq) => {
+                const freq = FREQ_COLORS[eq.staffing_group ?? ''] ?? FREQ_COLORS.LOW;
+                return (
+                  <Card key={eq.id} className={`p-3 border ${eq.is_active ? freq.bg : 'bg-gray-100 border-gray-200 opacity-60'}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-lg font-bold">{eq.code}</span>
+                      <div className="flex gap-1">
+                        {eq.staffing_group && (
+                          <Badge variant="outline" className="text-[10px] px-1">
+                            {freq.label}
+                          </Badge>
+                        )}
+                        <Badge variant={eq.is_active ? 'default' : 'secondary'}>
+                          {eq.is_active ? '가동' : '비활성'}
+                        </Badge>
+                      </div>
                     </div>
-                  )}
-                </Card>
-              ))}
+                    <div className="text-muted-foreground mt-1 text-xs">
+                      {eq.type ?? eq.name ?? '-'}
+                    </div>
+                    {(eq.air_usage_33k > 0 || eq.air_usage_25k > 0) && (
+                      <div className="text-muted-foreground mt-1 font-mono text-xs">
+                        {eq.air_usage_33k > 0 && `33k: ${eq.air_usage_33k}`}
+                        {eq.air_usage_33k > 0 && eq.air_usage_25k > 0 && ' | '}
+                        {eq.air_usage_25k > 0 && `25k: ${eq.air_usage_25k}`}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           </div>
         );

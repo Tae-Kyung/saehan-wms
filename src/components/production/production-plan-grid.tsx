@@ -471,17 +471,31 @@ export function ProductionPlanGrid({ equipment, products }: Props): React.ReactE
                               <div className="mb-2">
                                 <p className="text-xs font-medium text-gray-500 mb-1">생산 제품</p>
                                 {linkedProducts.length > 0 ? (
-                                  <select
-                                    value={cell.product_id ?? ''}
-                                    onChange={(e) => handleProductChange(key, e.target.value)}
-                                    className="w-full rounded border px-2 py-1 text-xs">
-                                    <option value="">선택안함</option>
-                                    {linkedProducts.map((p) => (
-                                      <option key={p.id} value={p.id}>
-                                        {p.name} {p.volume_ml ? `(${p.volume_ml}ml)` : ''}
-                                      </option>
-                                    ))}
-                                  </select>
+                                  <>
+                                    <input
+                                      type="text"
+                                      placeholder="제품명 검색..."
+                                      className="w-full rounded border px-2 py-1 text-xs mb-1"
+                                      onChange={(e) => {
+                                        const q = e.target.value.toLowerCase();
+                                        const match = linkedProducts.find(
+                                          (p) => p.name.toLowerCase().includes(q)
+                                        );
+                                        if (match) handleProductChange(key, match.id);
+                                      }}
+                                    />
+                                    <select
+                                      value={cell.product_id ?? ''}
+                                      onChange={(e) => handleProductChange(key, e.target.value)}
+                                      className="w-full rounded border px-2 py-1 text-xs">
+                                      <option value="">선택안함</option>
+                                      {linkedProducts.map((p) => (
+                                        <option key={p.id} value={p.id}>
+                                          {p.name} {p.volume_ml ? `(${p.volume_ml}ml)` : ''}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </>
                                 ) : (
                                   <p className="text-xs text-gray-400">
                                     설비에 연결된 제품이 없습니다.<br/>
